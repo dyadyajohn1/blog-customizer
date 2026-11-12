@@ -5,6 +5,7 @@ import {
   fontColors,
   backgroundColors,
   contentWidthArr,
+  type ArticleStateType,
 } from '@/constants/articleProps.ts';
 import { clsx } from 'clsx';
 import { useState, useEffect, useRef } from 'react';
@@ -17,24 +18,32 @@ import { Separator } from 'src/ui/separator';
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleParamsFormProps = {
-  onApply: (state: typeof defaultArticleState) => void;
+  onApply: (state: ArticleStateType) => void;
 };
 
 export const ArticleParamsForm = ({
   onApply,
 }: ArticleParamsFormProps): React.JSX.Element => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isParamsFormOpen, setIsParamsFormOpen] = useState(false);
 
   const [formState, setFormState] = useState(defaultArticleState);
 
   const formRef = useRef<HTMLElement>(null);
 
+  const buttonRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isParamsFormOpen) return;
 
     const handleClickOutside = (event: MouseEvent): void => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+      const target = event.target as Node;
+
+      const isOutsideForm = formRef.current && !formRef.current.contains(target);
+
+      const isOutsideButton = buttonRef.current && !buttonRef.current.contains(target);
+
+      if (isOutsideForm && isOutsideButton) {
+        setIsParamsFormOpen(false);
       }
     };
 
@@ -43,7 +52,7 @@ export const ArticleParamsForm = ({
     return (): void => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isParamsFormOpen]);
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
@@ -58,11 +67,16 @@ export const ArticleParamsForm = ({
 
   return (
     <>
-      <ArrowButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+      <div ref={buttonRef}>
+        <ArrowButton
+          isOpen={isParamsFormOpen}
+          onClick={() => setIsParamsFormOpen(!isParamsFormOpen)}
+        />
+      </div>
 
       <aside
         ref={formRef}
-        className={clsx(styles.container, { [styles.container_open]: isOpen })}
+        className={clsx(styles.container, { [styles.container_open]: isParamsFormOpen })}
       >
         <form className={styles.form} onSubmit={handleSubmit} onReset={handleReset}>
           <h2 className={styles.title}>Задайте параметры</h2>

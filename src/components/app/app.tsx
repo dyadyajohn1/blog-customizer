@@ -1,4 +1,4 @@
-import { defaultArticleState } from '@/constants/articleProps.ts';
+import { defaultArticleState, type ArticleStateType } from '@/constants/articleProps.ts';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 
@@ -11,7 +11,8 @@ import type { CSSProperties } from 'react';
 import styles from './app.module.scss';
 
 export const App = (): React.JSX.Element => {
-  const [appliedState, setAppliedState] = useState(defaultArticleState);
+  const [appliedState, setAppliedState] =
+    useState<ArticleStateType>(defaultArticleState);
 
   return (
     <main
